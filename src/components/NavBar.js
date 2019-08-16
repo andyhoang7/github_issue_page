@@ -19,6 +19,7 @@ export default class NavBar extends Component {
         <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
         <NavDropdown.Divider />
         <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+
       </NavDropdown>
     </Nav>
     <Form inline>
@@ -32,7 +33,7 @@ export default class NavBar extends Component {
     </Form>
   </Navbar.Collapse>
 </Navbar>
-            </div>
+ </div>
         )
     }
 }
