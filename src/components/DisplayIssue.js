@@ -34,28 +34,6 @@ export default class DisplayIssue extends Component {
     this.setState({ newIssue });
   };
 
-  // postIssue = async () => {
-  //   let data = new URLSearchParams();
-  //   data.append("title", this.state.newIssue.title);
-  //   data.append("body", this.state.newIssue.body);
-  //   const url = `https://api.github.com/repos/${value}/issues`;
-  //   const config = {
-  //     method: "POST",
-  //     headers: {
-  //       "Authorization" : `token ${this.state.token}`
-  //       "Content-Type": "application/x-www-form-urlencoded"
-  //     },
-  //     body: data.toString(),
-  //     json: true
-  //   };
-  //   this.setState({ isOpen: false });
-  //   const response = await fetch(url, config);
-  //   if (response.status == 200) {
-  //     this.props.searchRepos();
-  //   }
-  // };
-
-
   render() {
     // console.log('hehehe', this.props.issues)
 
