@@ -193,12 +193,14 @@ export default class App extends Component {
           handleOnchange={this.handleOnchange}
           searchRepos={this.searchRepos}
         />
+
         {this.state.issues.length === 0 && (
           <>
           <h1>{this.state.hello}</h1>
         <h1>GitHub Issues Page</h1>
         <h2>My username: {this.state.username}</h2>
         <GetRepoName userRepos={this.state.userRepos} />
+        
         <Repos allRepos={
           this.state.allRepos} 
           getIssue={this.getIssue}
