@@ -28,7 +28,7 @@ export default class NavBar extends Component {
        value={this.props.userInput}
        onChange={(e)=> this.props.handleOnchange(e)}
        />
-      <Button variant="outline-success" onClick={()=>this.props.handleClick()}>Search</Button>
+      <Button type="submit" variant="outline-success" onClick={(e)=>this.props.handleClick(e)}>Search</Button>
     </Form>
   </Navbar.Collapse>
 </Navbar>

@@ -120,7 +120,9 @@ export default class App extends Component {
   };
 
   handleClick = e => {
+    e.preventDefault()
     this.searchRepos();
+    
   };
   searchRepos = async () => {
     let repos = [];
@@ -156,6 +158,7 @@ export default class App extends Component {
   handleOnchange = e => {
     e.preventDefault();
     this.setState({ userInput: e.target.value });
+    
   };
 
   filterRepos = searchTerm => {
