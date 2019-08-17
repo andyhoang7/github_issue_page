@@ -9,22 +9,22 @@ import ReactModal from "react-modal";
 
 const clientId = process.env.REACT_APP_CLIENT_ID;
 
-class GetRepoName extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    // console.log("this.props.userRepos", this.props.userRepos)
-    return (
-      <div>
-        {this.props.userRepos !== undefined &&
-          this.props.userRepos.map(repo => {
-            return <ul>Repo name: {repo.name}</ul>;
-          })}
-      </div>
-    );
-  }
-}
+// class GetRepoName extends Component {
+//   constructor(props) {
+//     super(props);
+//   }
+//   render() {
+//     // console.log("this.props.userRepos", this.props.userRepos)
+//     return (
+//       <div>
+//         {this.props.userRepos !== undefined &&
+//           this.props.userRepos.map(repo => {
+//             return <ul>Repo name: {repo.name}</ul>;
+//           })}
+//       </div>
+//     );
+//   }
+// }
 
 export default class App extends Component {
   constructor(props) {
@@ -79,8 +79,8 @@ export default class App extends Component {
   }
 
   componentDidMount = () => {
-    this.fetchUser();
-    this.fetchUserRepo();
+    // this.fetchUser();
+    // this.fetchUserRepo();
    
   };
   
@@ -98,26 +98,29 @@ export default class App extends Component {
     console.log("data", data);
   };
 
-  fetchUser = async () => {
-    const response = await fetch("https://api.github.com/users/andyhoang7");
-    const data = await response.json();
 
-    const username = data.login;
-    this.setState({ username: username });
-    // console.log('data', username)
-  };
+ 
 
-  fetchUserRepo = async () => {
-    const response = await fetch(
-      "https://api.github.com/users/andyhoang7/repos"
-    );
-    const data = await response.json();
-    // console.log("response", response);
+  // fetchUser = async () => {
+  //   const response = await fetch("https://api.github.com/users/andyhoang7");
+  //   const data = await response.json();
 
-    this.setState({ userRepos: data });
+  //   const username = data.login;
+  //   this.setState({ username: username });
+  //   // console.log('data', username)
+  // };
 
-    // console.log("data", data);
-  };
+  // fetchUserRepo = async () => {
+  //   const response = await fetch(
+  //     "https://api.github.com/users/andyhoang7/repos"
+  //   );
+  //   const data = await response.json();
+  //   console.log("typeOF", typeof data);
+
+  //   this.setState({ userRepos: data });
+
+  //   // console.log("data", data);
+  // };
 
   handleClick = e => {
     e.preventDefault()
@@ -151,9 +154,7 @@ export default class App extends Component {
     }
   };
 
-  // getIssue = async () => {
-  //   const response = await fetch(`https://api.github.com/repos/${this.state.}/issues`)
-  // }
+  
 
   handleOnchange = e => {
     e.preventDefault();
@@ -199,7 +200,7 @@ export default class App extends Component {
           <h1>{this.state.hello}</h1>
         <h1>GitHub Issues Page</h1>
         <h2>My username: {this.state.username}</h2>
-        <GetRepoName userRepos={this.state.userRepos} />
+        {/* <GetRepoName userRepos={this.state.userRepos} /> */}
         
         <Repos allRepos={
           this.state.allRepos} 
