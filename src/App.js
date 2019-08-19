@@ -78,8 +78,8 @@ export default class App extends Component {
   }
 
   componentDidMount = () => {
-    this.fetchUser();
-    this.fetchUserRepo();
+    // this.fetchUser();
+    // this.fetchUserRepo();
   };
 
   getIssue = async value => {
@@ -90,7 +90,8 @@ export default class App extends Component {
 
     this.setState({
       issues: data,
-      isShow: false
+      isShow: false,
+      repoName: value
     });
     console.log("data", data);
   };
@@ -205,7 +206,7 @@ export default class App extends Component {
                   <h1>{this.state.hello}</h1>
                   <h1>GitHub Issues Page</h1>
                   <h2>My username: {this.state.username}</h2>
-                  <GetRepoName userRepos={this.state.userRepos} />
+                  {/* <GetRepoName userRepos={this.state.userRepos} /> */}
 
                   
 
@@ -330,6 +331,9 @@ export default class App extends Component {
             <DisplayIssue
               issues={this.state.issues}
               openModal={this.openModal}
+              getIssue={this.getIssue}
+              repoName={this.state.repoName}
+              token={this.state.token}
             />
           </>
         )}

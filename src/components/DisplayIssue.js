@@ -21,11 +21,12 @@ export default class DisplayIssue extends Component {
       isOpen: false
     });
   };
-  handleSubmit = e => {
+  handleSubmit = (e, value) => {
     e.preventDefault();
-    this.setState({
-      issues: this.state.issues.concat(this.state.newIssue) 
-    })
+    // this.setState({
+    //   issues: this.state.issues.concat(this.state.newIssue)
+    // });
+    this.postIssue(value)
   };
 
   handleChange = ({ currentTarget: input }) => {
@@ -34,8 +35,31 @@ export default class DisplayIssue extends Component {
     this.setState({ newIssue });
   };
 
+  postIssue = async (value) => {
+   
+    const data = {
+      title: this.state.newIssue.title,
+      body: this.state.newIssue.body
+    };
+    const token = this.props.token.split("&")
+    const tokenPick = token[0]
+    const url = `https://api.github.com/repos/${value}/issues`;
+    const config = {
+      method: "POST",
+      headers: new Headers ({
+        "Authorization" : `token ${tokenPick}`,
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(data)
+    };
+    this.setState({ isOpen: false });
+    const response = await fetch(url, config);
+    if (response.status === 200) {
+      this.props.getIssue();
+    }
+  };
+
   render() {
-    // console.log('hehehe', this.props.issues)
 
     const { newIssue } = this.state;
 
@@ -67,27 +91,29 @@ export default class DisplayIssue extends Component {
             },
             content: {
               backgroundColor: "white",
-              borderRadius: 5,
-              Width: 400,
-              Height: 300,
-              margin: "0 auto",
-              padding: 20,
+              borderRadius: 15,
+              
+              margin: 50,
+              padding: 50,
               display: "flex",
               justifyContent: "center",
               alignItems: "center"
             }
           }}
         >
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Group controlId="formBasicEmail">
+          <Form onSubmit={(e)=>this.handleSubmit(e, this.props.repoName)}>
+            <Form.Group controlId="formBasicEmail" className="formInput"
+>
               <Form.Label>Issue Title</Form.Label>
               <Form.Control
+              required
                 type="text"
                 placeholder="Issue Title"
                 value={newIssue.title}
                 onChange={this.handleChange}
                 id="title"
                 name="title"
+                className="titleInput"
               />
             </Form.Group>
 
@@ -100,6 +126,9 @@ export default class DisplayIssue extends Component {
                 onChange={this.handleChange}
                 id="body"
                 name="body"
+                className="bodyInput"
+                as="textarea" rows="5" cols='120' 
+
               />
             </Form.Group>
 

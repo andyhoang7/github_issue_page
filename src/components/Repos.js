@@ -5,7 +5,7 @@ class Repos extends Component {
 
     render() {
         return (
-            <div>
+            <div className="reposDisplay">
                 {this.props.allRepos.map(repo=>(
                     <ReposCard getIssue={this.props.getIssue} repo={repo} />
                 )
