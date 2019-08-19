@@ -1,30 +1,75 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
-import "./App.css";
+
 import NavBar from "./components/NavBar";
 import Repos from "./components/Repos";
 import DisplayIssue from "./components/DisplayIssue";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Row,
+  Col,
+  Pagination,
+  ListGroup,
+  ButtonToolbar
+} from "react-bootstrap";
 import ReactModal from "react-modal";
+import { IoIosGitMerge} from "react-icons/io";
+
+
+import "./App.css";
 
 const clientId = process.env.REACT_APP_CLIENT_ID;
+const ReactMarkdown = require("react-markdown");
+const ReactDOM = require("react-dom");
 
-// class GetRepoName extends Component {
-//   constructor(props) {
-//     super(props);
-//   }
-//   render() {
-//     // console.log("this.props.userRepos", this.props.userRepos)
-//     return (
-//       <div>
-//         {this.props.userRepos !== undefined &&
-//           this.props.userRepos.map(repo => {
-//             return <ul>Repo name: {repo.name}</ul>;
-//           })}
-//       </div>
-//     );
-//   }
-// }
+const parse = require("parse-link-header");
+const parsed = parse(
+  '<https://api.github.com/search/repositories?q=react&page=2>; rel="next", <https://api.github.com/search/repositories?q=react&page=34>; rel="last"'
+);
+const total_pages = parsed.last.page;
+
+const backdropStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(255, 255, 255, 0.75)"
+};
+const modalStyle = {
+  position: "absolute",
+  top: "100px",
+  left: "100px",
+  right: "100px",
+  bottom: "100px",
+  border: "1px solid #ccc",
+  background: "#fff",
+  overflow: "auto",
+  WebkitOverflowScrolling: "touch",
+  borderRadius: "4px",
+  outline: "none",
+  padding: "20px"
+};
+
+class GetRepoName extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    // console.log("this.props.userRepos", this.props.userRepos)
+    console.log("map", total_pages);
+    return (
+      <div>
+        {this.props.userRepos !== undefined &&
+          this.props.userRepos.map(repo => {
+            return <ul>Repo name: {repo.name}</ul>;
+          })}
+      </div>
+    );
+  }
+}
 
 export default class App extends Component {
   constructor(props) {
@@ -32,7 +77,7 @@ export default class App extends Component {
     const existingToken = sessionStorage.getItem("token");
     const accessToken =
       window.location.search.split("=")[0] === "?access_token"
-        ? window.location.search.split("=")[1]
+        ? window.location.search.split("=")[1].slice(0, -6)
         : null;
 
     if (!accessToken && !existingToken) {
@@ -56,7 +101,9 @@ export default class App extends Component {
         issues: [],
         isShow: true,
         isOpen: false,
-        issueContent: ""
+        issueContent: "",
+        total_page: 0,
+        issueUser: ""
       };
     }
 
@@ -72,7 +119,9 @@ export default class App extends Component {
         issues: [],
         isShow: true,
         isOpen: false,
-        issueContent: ""
+        issueContent: "",
+        total_page: 0,
+        issueUser: ""
       };
     }
   }
@@ -83,25 +132,37 @@ export default class App extends Component {
   };
 
   getIssue = async value => {
+    // const response = await fetch(
+    //   `https://api.github.com/repos/${value}/issues`
+    // );
+    // const data = await response.json();
+    // let total_issue=0
     const response = await fetch(
-      `https://api.github.com/repos/${value}/issues`
+      `https://api.github.com/search/issues?q=repo:${value}+type:issue`
     );
     const data = await response.json();
+    console.log("kimkim", data.total_count);
 
     this.setState({
-      issues: data,
+      issues: data.items,
       isShow: false,
-      repoName: value
+      repoName: value,
+      total_issue: data.total_count
     });
-    console.log("data", data);
+    console.log("Totalcount", this.state.total_issue);
+    console.log("issueUser", data.items[0].user)
+    // console.log(repoName );
   };
 
 
  
 
-  // fetchUser = async () => {
-  //   const response = await fetch("https://api.github.com/users/andyhoang7");
-  //   const data = await response.json();
+  fetchUserRepo = async () => {
+    const response = await fetch(
+      "https://api.github.com/users/andyhoang7/repos"
+    );
+    const data = await response.json();
+    console.log("typeOF", typeof data);
 
   //   const username = data.login;
   //   this.setState({ username: username });
@@ -125,34 +186,32 @@ export default class App extends Component {
     this.searchRepos();
     
   };
-  searchRepos = async () => {
+  searchRepos = async page => {
     let repos = [];
 
     const response = await fetch(
       `https://api.github.com/search/repositories?q=${
         this.state.userInput
-      }&page=${this.state.page}`
+      }&page=${page}`
     );
     const jsonData = await response.json();
     // console.log("phuong",jsonData.items[0].full_name)
-    // this.setState({userFullName: jsonData.items[0].full_name})
-    console.log("mai", jsonData.items);
+
+    console.log("mai", jsonData);
     // console.log('khoa',this.state.repos)
 
-    // console.log('para',repos)
     if (jsonData.items.length === 0) {
       alert("there is an error");
     } else {
       this.setState({
         repos: repos.concat(jsonData.items),
         allRepos: this.state.allRepos.concat(jsonData.items),
-        page: this.state.page + 1
+        page: page,
+        total_page: total_pages
       });
       console.log("khoa", this.state.allRepos);
     }
   };
-
-  
 
   handleOnchange = e => {
     e.preventDefault();
@@ -168,11 +227,13 @@ export default class App extends Component {
     console.log("filterrepo", this.state.repos);
   };
 
-  openModal = value => {
+  openModal = (value1, value2) => {
     this.setState({
       isOpen: true,
-      issueContent: value
+      issueContent: value1,
+      issueUser: value2
     });
+    // console.log("mommyyyy", value);
   };
 
   closeModal = () => {
@@ -180,11 +241,30 @@ export default class App extends Component {
       isOpen: false
     });
   };
+  renderPagination() {
+    let pages = [];
+    for (let i = 1; i <= Math.min(this.state.total_pages, 30); i++) {
+      pages.push(i);
+    }
+    return pages.map(page => {
+      if (page <= this.state.page + 3 && page >= this.state.page - 3) {
+        return (
+          <Pagination.Item
+            active={page === this.state.page}
+            onClick={() => this.searchRepos(page)}
+          >
+            {page}
+          </Pagination.Item>
+        );
+      }
+    });
+  }
 
   render() {
-    // console.log("userRepos", this.state.userRepos)
+    // console.log("userRepos", this.state.userRepos
+    // console.log("hahaha", this.state.total_page);
     return (
-      <div>
+      <wrap>
         <NavBar
           handleClick={this.handleClick}
           handleOnchange={this.handleOnchange}
@@ -201,34 +281,94 @@ export default class App extends Component {
                 marginRight: 0
               }}
             >
-              <Row style={{ width: "100vw", height: "100vh", marginTop: 50 }}>
-                <Col sm={3} className="column-one">
+              <Row
+                style={{
+                  width: "100vw",
+                  height: "100vh",
+                  marginTop: 50,
+                  fontWeight: "200px"
+                }}
+              >
+                <Col lg={2} className="column-one">
+                  <ButtonToolbar>
+                    <Button variant="success" className="float-right">
+                      New
+                    </Button>
+                  </ButtonToolbar>
                   <h1>{this.state.hello}</h1>
-                  <h1>GitHub Issues Page</h1>
-                  <h2>My username: {this.state.username}</h2>
-                  {/* <GetRepoName userRepos={this.state.userRepos} /> */}
+                  <h1 style={{ fontWeight: "600", fontSize: "1rem" }}>
+                    Repositories{" "}
+                  </h1>
+                  <h2 style={{ fontWeight: "500", fontSize: "1rem" }}>
+                    My username: {this.state.username}
+                  </h2>
 
-                  
-
+                  <GetRepoName userRepos={this.state.userRepos} />
                 </Col>
-                <Col sm={6} className="column-two">
-                  <div className="row-one">
-                    <div className="box-one">
-                      <h1>Learn Git and Github without any code!</h1>
-                      <span>
-                        Using the Hello World guide, yoiu'll create the
-                        repository,start a branch,write common, and open a pull
-                        request
+                <Col lg={7} className="column-two">
+                  <div className="box-one">
+                    <div className="one">
+                      <h1
+                        style={{
+                          fontWeight: "500",
+                          fontSize: "30px",
+                          lineHeight: "1.5"
+                        }}
+                      >
+                        Learn Git and GitHub without any <br />
+                        code!
+                      </h1>
+                      <span
+                        style={{
+                          fontWeight: "450",
+                          fontSize: "18px",
+                          lineHeight: "1.5",
+                          color: "#586069",
+                          marginBottom: "30px",
+                          marginTop: "10px"
+                        }}
+                      >
+                        Using the Hello World guide, you'll create the
+                        repository, start a <br /> branch, write common, and
+                        open a pull request
                       </span>
                       <div>
-                        <button>Read the Guide</button>
-                        <button>Start a Project</button>
+                        <div className="buttonGroup">
+                          <Button
+                            variant="primary"
+                            size="lg"
+                            style={{
+                              backgroundColor: "#28a745",
+                              fontSize: "x-large",
+                              lineHeight: "unset",
+                              color: "white",
+                              borderColor: "#28a745"
+                            }}
+                          >
+                            Read the guide
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="lg"
+                            style={{
+                              backgroundColor: "white",
+                              fontSize: "x-large",
+                              lineHeight: "unset",
+                              paddingLeft: "10px",
+                              color: "black",
+                              borderColor: "white"
+                            }}
+                          >
+                            {" "}
+                            Start a project
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div className="row-one" />
                   <div className="row-one">
-                    <Row>
+                    <Row style={{ paddingTop: 50 }}>
                       <Col xs={5}>2019 Github, Inc</Col>
                       <Col>
                         <div>
@@ -279,10 +419,21 @@ export default class App extends Component {
                     </Row>
                   </div>
                 </Col>
-                <Col sm={3} className="column-three">
+                <Col lg={3} className="column-three">
                   <div className="row-one-col-three">
                     <div className="box-two">
-                      <h5>GitHub Actions beta, now with CI/CD</h5>
+                      <h5
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "600",
+                          marginTop: "0.5rem",
+                          padding: "1rem",
+                          lineHeight: "0.5rem"
+                        }}
+                      >
+                      GitHub Actions beta, now with CI/CD
+                        
+                      </h5>
                       <span>
                         Automate any workflow with GitHub Actions. See the
                         latest updates and register for the beta.
@@ -291,7 +442,17 @@ export default class App extends Component {
                   </div>
                   <div className="row-one-col-three">
                     <div className="box-three">
-                      <h5>GitHub Sponsors Matching Fund</h5>
+                      <h5
+                        style={{
+                          fontSize: "medium",
+                          fontWeight: "600",
+                          marginTop: "0.5rem",
+                          padding: "0.5rem",
+                          lineHeight: "0.5rem"
+                        }}
+                      >
+                        GitHub Sponsors Matching Fund
+                      </h5>
                       <span>
                         Ready to support open source? GitHub will match your
                         contribution to developers during their first year in
@@ -314,60 +475,68 @@ export default class App extends Component {
 
         {this.state.allRepos.length > 0 && (
           <>
-          {this.state.issues.length === 0 && (
-          <>
-          <Repos
-                    allRepos={this.state.allRepos}
-                    getIssue={this.getIssue}
+            {this.state.issues.length === 0 && (
+              <>
+                <Repos
+                  // allRepos={this.state.allRepos}
+                  getIssue={this.getIssue}
+                  repos={this.state.repos}
+                />
+                <Pagination>
+                  <Pagination.First onClick={() => this.searchRepos(1)} />
+                  <Pagination.Prev
+                    disabled={this.state.page === 1}
+                    onClick={() => this.searchRepos(this.state.page - 1)}
                   />
-                  <Button onClick={() => this.searchRepos(this.state.page)}>
-                    More
-                  </Button>
-                  </>
-        )}
+                  {this.renderPagination()}
+                  <Pagination.Next
+                    disabled={
+                      this.state.page === Math.min(this.state.total_pages, 30)
+                    }
+                    onClick={() => this.searchRepos(this.state.page + 1)}
+                  />
+                  <Pagination.Last
+                    onClick={() =>
+                      this.searchRepos(Math.min(this.state.total_pages, 30))
+                    }
+                  />
+                </Pagination>
+              </>
+            )}
 
-        {this.state.issues.length > 0 && (
-          <>
-            <DisplayIssue
-              issues={this.state.issues}
-              openModal={this.openModal}
-              getIssue={this.getIssue}
-              repoName={this.state.repoName}
-              token={this.state.token}
-            />
+            {this.state.issues.length > 0 && (
+              <>
+                <DisplayIssue
+                  issues={this.state.issues}
+                  openModal={this.openModal}
+                  getIssue={this.getIssue}
+                  repoName={this.state.repoName}
+                  token={this.state.token}
+                />
+              </>
+            )}
           </>
         )}
-        </>)}
 
         <ReactModal
           isOpen={this.state.isOpen}
           onRequestClose={() => this.closeModal()}
+          overlayClassName="ReactModal__Overlay"
+          closeTimeoutMS={1000}
           style={{
-            overlay: {
-              position: "fixed",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: "rgba(0,0,0,0.3)",
-              padding: 50
-            },
-            content: {
-              backgroundColor: "black",
-              borderRadius: 5,
-              Width: 400,
-              Height: 300,
-              margin: "0 auto",
-              padding: 20,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }
+            overlay: backdropStyle,
+            content: modalStyle
           }}
         >
-          <h1>{this.state.issueContent}</h1>
+          {/* <h1>{this.state.issueContent}</h1> */}
+          <ListGroup>
+            <ListGroup.Item>{this.state.issueUser}</ListGroup.Item>
+            <ListGroup.Item>
+              <small>{this.state.issueContent}</small>
+            </ListGroup.Item>
+          </ListGroup>
         </ReactModal>
-      </div>
+      </wrap>
     );
   }
 }
