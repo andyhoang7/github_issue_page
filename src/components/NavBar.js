@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Button, Navbar, Form, FormControl, Nav, NavDropdown } from 'react-bootstrap';
+import { Button, Navbar, Form, FormControl, Nav, Image } from 'react-bootstrap';
+
 
 
 export default class NavBar extends Component {
@@ -7,7 +8,7 @@ export default class NavBar extends Component {
         return (
             <div>
                 <Navbar bg="dark" expand="lg">
-  <Navbar.Brand href="#home">GitHub</Navbar.Brand>
+                <Navbar.Brand href="#home"><Image src={require('./images/icon.png')} style={{height: 50}}/></Navbar.Brand>
   <Navbar.Toggle aria-controls="basic-navbar-nav" />
   <Navbar.Collapse id="basic-navbar-nav">
     <Nav className="mr-auto">
