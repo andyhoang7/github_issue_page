@@ -127,8 +127,8 @@ export default class App extends Component {
   }
 
   componentDidMount = () => {
-    this.fetchUser();
-    this.fetchUserRepo();
+    // this.fetchUser();
+    // this.fetchUserRepo();
   };
 
   getIssue = async value => {
@@ -154,14 +154,8 @@ export default class App extends Component {
     // console.log(repoName );
   };
 
-  fetchUser = async () => {
-    const response = await fetch("https://api.github.com/users/andyhoang7");
-    const data = await response.json();
 
-    const username = data.login;
-    this.setState({ username: username });
-    // console.log('data', username)
-  };
+ 
 
   fetchUserRepo = async () => {
     const response = await fetch(
@@ -170,14 +164,27 @@ export default class App extends Component {
     const data = await response.json();
     console.log("typeOF", typeof data);
 
-    this.setState({ userRepos: data });
+  //   const username = data.login;
+  //   this.setState({ username: username });
+  //   // console.log('data', username)
+  // };
 
-    // console.log("data", data);
-  };
+  // fetchUserRepo = async () => {
+  //   const response = await fetch(
+  //     "https://api.github.com/users/andyhoang7/repos"
+  //   );
+  //   const data = await response.json();
+  //   console.log("typeOF", typeof data);
+
+  //   this.setState({ userRepos: data });
+
+  //   // console.log("data", data);
+  // };
 
   handleClick = e => {
     e.preventDefault();
     this.searchRepos();
+    
   };
   searchRepos = async page => {
     let repos = [];
@@ -209,6 +216,7 @@ export default class App extends Component {
   handleOnchange = e => {
     e.preventDefault();
     this.setState({ userInput: e.target.value });
+    
   };
 
   filterRepos = searchTerm => {

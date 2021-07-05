@@ -63,8 +63,31 @@ export default class DisplayIssue extends Component {
     }
   };
 
+  postIssue = async (value) => {
+   
+    const data = {
+      title: this.state.newIssue.title,
+      body: this.state.newIssue.body
+    };
+    const token = this.props.token.split("&")
+    const tokenPick = token[0]
+    const url = `https://api.github.com/repos/${value}/issues`;
+    const config = {
+      method: "POST",
+      headers: new Headers ({
+        "Authorization" : `token ${tokenPick}`,
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(data)
+    };
+    this.setState({ isOpen: false });
+    const response = await fetch(url, config);
+    if (response.status === 200) {
+      this.props.getIssue();
+    }
+  };
+
   render() {
-    // console.log('hehehe', this.props.issues)
 
     const { newIssue } = this.state;
     console.log("ananan", this.props.repoName);
@@ -181,7 +204,6 @@ export default class DisplayIssue extends Component {
             content: {
               backgroundColor: "white",
               borderRadius: 15,
-
               margin: 50,
               padding: 50,
               display: "flex",

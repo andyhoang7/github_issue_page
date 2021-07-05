@@ -9,7 +9,6 @@ body{
   background-color: aqua;
   border: 1px solid black;
   margin-left: 50px;
- 
 }
 .column-one{
   background-color: palevioletred;
@@ -27,12 +26,9 @@ body{
   border: 1px solid rgb(4, 110, 248);
   background-color: #f1f8ff;
   margin-left: 0px;
-  border-radius: 5px
-  
-  
-
+  border-radius: 5px;
 }
-.box-three{
+.box-three {
   width: 330px;
   height: 150px;
   border: 1px solid rgb(243, 115, 136);
@@ -49,9 +45,38 @@ body{
   border: 1px solid rgb(4, 110, 248);
   background-color: white;
   margin-top: 30px;
-  border-radius: 5px
-  
+  border-radius: 5px;
+}
 
+.reposDisplay {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem;
+}
+
+.repoCard {
+  display: flex;
+  margin: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.shadow-box-example {
+  /* height: 120px; */
+  width: 100%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 3px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.shadow-box-example:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+}
+
+.titleInput {
+  display: flex;
+  /* background-color: pink; */
 }
 .row-two{
   margin-bottom: 0,
@@ -204,3 +229,14 @@ reposDisplay {
  
  }
 
+  /* background-color: blue;  */
+
+
+
+
+.form-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 200% !important;
+}
